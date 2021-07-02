@@ -63,6 +63,10 @@ RUN dpkg -i /tmp/pure-ftpd/pure-ftpd-common*.deb &&\
 # prevent pure-ftpd upgrading
 RUN apt-mark hold pure-ftpd pure-ftpd-common
 
+# Install supervisor
+RUN apt-get update && apt-get install -y supervisor
+
+
 # setup ftpgroup and ftpuser
 RUN groupadd ftpgroup &&\
 	useradd -g ftpgroup -d /home/ftpusers -s /dev/null ftpuser
@@ -76,6 +80,9 @@ RUN echo "" >> /etc/rsyslog.conf && \
 # setup run/init file
 COPY run.sh /run.sh
 RUN chmod u+x /run.sh
+
+## Add conf supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # cleaning up
 RUN apt-get -y clean \
@@ -91,5 +98,8 @@ VOLUME ["/home/ftpusers", "/etc/pure-ftpd/passwd"]
 
 # startup
 CMD /run.sh -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P $PUBLICHOST
+
+## Start supervisor
+CMD ["/usr/bin/supervisord"]
 
 EXPOSE 21 30000-30009
