@@ -86,7 +86,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 COPY start-uploadscript.sh /start-uploadscript.sh
-RUN chmod u+x /run.sh
+RUN chmod u+x /start-uploadscript.sh
 # cleaning up
 RUN apt-get -y clean \
 	&& apt-get -y autoclean \
